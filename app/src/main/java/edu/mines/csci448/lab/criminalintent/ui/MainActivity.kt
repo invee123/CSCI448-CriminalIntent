@@ -17,15 +17,11 @@ import edu.mines.csci448.lab.criminalintent.ui.detail.CrimeListViewModelFactory
 class MainActivity : AppCompatActivity() {
 
     private val logTag = "448.MainActivity"
-    private lateinit var crimeListViewModel: CrimeListViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(logTag, "onCreate() called")
-
-        val factory = CrimeListViewModelFactory()
-        crimeListViewModel = ViewModelProvider(this, factory).get(CrimeListViewModel::class.java)
 
         setContentView(R.layout.activity_main)
 

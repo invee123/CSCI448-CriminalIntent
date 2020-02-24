@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,14 +18,16 @@ import edu.mines.csci448.lab.criminalintent.data.Crime
 class CrimeListFragment: Fragment() {
 
     private val logTag = "448.CrimeListFrag"
+    private lateinit var crimeListViewModel: CrimeListViewModel
     private lateinit var crimeRecyclerView: RecyclerView
+    private lateinit var adapter: CrimeListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(logTag, "onCreate() called")
 
-
-
+        val factory = CrimeListViewModelFactory()
+        crimeListViewModel = ViewModelProvider(this, factory).get(CrimeListViewModel::class.java)
     }
 
     override fun onStart() {
@@ -77,8 +80,17 @@ class CrimeListFragment: Fragment() {
         Log.d(logTag, "onDestroyView() called")
         super.onDestroyView()
     }
-    override fun onDetach(){
+    override fun onDetach() {
         Log.d(logTag, "onDetach() called")
         super.onDetach()
+    }
+
+    private fun updateUI() {
+        val crimes = crimeListViewModel.crimes
+        adapter = CrimeListAdapter(crimes) {
+            crime: Crime-> Unit
+            Toast.makeText(context, "${crime.title} pressed!", Toast.LENGTH_SHORT)
+        }
+        crimeRecyclerView.adapter = adapter
     }
 }
