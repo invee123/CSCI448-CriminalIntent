@@ -7,18 +7,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import edu.mines.csci448.lab.criminalintent.R
 import edu.mines.csci448.lab.criminalintent.data.Crime
 
-class CrimeDetailFragment : Fragment() {
+class CrimeListFragment: Fragment() {
 
-    private val logTag = "448.CrimeDetailFrag"
-    private lateinit var crime: Crime
+    private val logTag = "448.CrimeListFrag"
+    private lateinit var crimeRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(logTag, "onCreate() called")
-        crime = Crime()
+
+
+
     }
 
     override fun onStart() {
@@ -52,9 +58,11 @@ class CrimeDetailFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                     savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View? {
         Log.d(logTag, "onCreateView() called")
         val view = inflater.inflate(R.layout.fragment_detail, container, false)
+        crimeRecyclerView = view.findViewById(R.id.crime_list_recycler_view) as RecyclerView
+        crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
