@@ -8,14 +8,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import edu.mines.csci448.lab.criminalintent.R
 import edu.mines.csci448.lab.criminalintent.data.Crime
+import java.util.*
+import javax.security.auth.callback.Callback
 
 class CrimeListFragment: Fragment() {
+
+    interface Callbacks {
+        fun onCrimeSelected(crimeId: UUID)
+    }
+
+    private var callbacks: Callbacks? = null
 
     private val logTag = "448.CrimeListFrag"
     private lateinit var crimeListViewModel: CrimeListViewModel
@@ -26,7 +34,7 @@ class CrimeListFragment: Fragment() {
         super.onCreate(savedInstanceState)
         Log.d(logTag, "onCreate() called")
 
-        val factory = CrimeListViewModelFactory()
+        val factory = CrimeListViewModelFactory(requireContext())
         crimeListViewModel = ViewModelProvider(this, factory).get(CrimeListViewModel::class.java)
     }
 
@@ -55,9 +63,11 @@ class CrimeListFragment: Fragment() {
         super.onDestroy()
     }
 
+
     override fun onAttach(context: Context) {
         Log.d(logTag, "onAttach() called")
         super.onAttach(context)
+        callbacks = context as Callbacks?
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -66,6 +76,7 @@ class CrimeListFragment: Fragment() {
         val view = inflater.inflate(R.layout.fragment_detail, container, false)
         crimeRecyclerView = view.findViewById(R.id.crime_list_recycler_view) as RecyclerView
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
+        updateUI(emptyList())
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
@@ -75,6 +86,15 @@ class CrimeListFragment: Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?){
         Log.d(logTag, "onActivityCreated() called")
         super.onActivityCreated(savedInstanceState)
+        crimeListViewModel.crimeListLiveData.observe(
+            viewLifecycleOwner,
+            Observer { crimes->
+                crimes?.let{
+                    Log.i(logTag, "Got crimes ${crimes.size}")
+                    updateUI(crimes)
+                }
+            }
+        )
     }
     override fun onDestroyView(){
         Log.d(logTag, "onDestroyView() called")
@@ -83,13 +103,13 @@ class CrimeListFragment: Fragment() {
     override fun onDetach() {
         Log.d(logTag, "onDetach() called")
         super.onDetach()
+        callbacks = null
     }
 
-    private fun updateUI() {
-        val crimes = crimeListViewModel.crimes
+    private fun updateUI(crimes: List<Crime>) {
         adapter = CrimeListAdapter(crimes) {
             crime: Crime-> Unit
-            Toast.makeText(context, "${crime.title} pressed!", Toast.LENGTH_SHORT)
+            callbacks?.onCrimeSelected(crime.id)
         }
         crimeRecyclerView.adapter = adapter
     }

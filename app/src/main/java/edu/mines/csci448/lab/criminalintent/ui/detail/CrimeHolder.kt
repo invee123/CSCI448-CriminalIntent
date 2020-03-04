@@ -1,7 +1,6 @@
 package edu.mines.csci448.lab.criminalintent.ui.detail
 
 import android.view.View
-import android.widget.ExpandableListView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView

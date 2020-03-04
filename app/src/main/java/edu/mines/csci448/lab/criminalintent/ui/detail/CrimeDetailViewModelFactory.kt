@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import edu.mines.csci448.lab.criminalintent.data.CrimeRepository
 
 
-class CrimeListViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class CrimeDetailViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return modelClass.getConstructor(CrimeRepository::class.java).newInstance(CrimeRepository.getInstance(context))
     }
