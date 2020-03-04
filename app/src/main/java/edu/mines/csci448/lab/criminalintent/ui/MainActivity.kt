@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import edu.mines.csci448.lab.criminalintent.R
@@ -13,16 +14,19 @@ import edu.mines.csci448.lab.criminalintent.ui.detail.CrimeDetailFragment
 import edu.mines.csci448.lab.criminalintent.ui.detail.CrimeListFragment
 import edu.mines.csci448.lab.criminalintent.ui.detail.CrimeListViewModel
 import edu.mines.csci448.lab.criminalintent.ui.detail.CrimeListViewModelFactory
+import edu.mines.csci448.lab.criminalintent.ui.pager.CrimePagerFragment
 import java.util.*
 
-private val logTag = "448.MainActivity"
+private const val logTag = "448.MainActivity"
 class MainActivity : AppCompatActivity(), CrimeListFragment.Callbacks {
+
+    private var detailContainer: FrameLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(logTag, "onCreate() called")
 
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_masterdetail)
 
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
 
@@ -31,15 +35,25 @@ class MainActivity : AppCompatActivity(), CrimeListFragment.Callbacks {
             supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment)
                 .commit()
         }
+
+        detailContainer = findViewById(R.id.detail_fragment_container)
     }
 
     override fun onCrimeSelected(crimeId: UUID) {
-        val fragment = CrimeDetailFragment.newInstance(crimeId)
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .addToBackStack(null)
-            .commit()
+        if(detailContainer == null) {
+            val fragment = CrimePagerFragment.newInstance(crimeId)
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit()
+        } else {
+            val fragment = CrimePagerFragment.newInstance(crimeId)
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.detail_fragment_container, fragment)
+                .commit()
+        }
     }
 
     override fun onStart() {

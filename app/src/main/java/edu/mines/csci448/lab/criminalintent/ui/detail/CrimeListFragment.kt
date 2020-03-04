@@ -3,9 +3,7 @@ package edu.mines.csci448.lab.criminalintent.ui.detail
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -36,6 +34,7 @@ class CrimeListFragment: Fragment() {
 
         val factory = CrimeListViewModelFactory(requireContext())
         crimeListViewModel = ViewModelProvider(this, factory).get(CrimeListViewModel::class.java)
+        setHasOptionsMenu(true)
     }
 
     override fun onStart() {
@@ -96,6 +95,26 @@ class CrimeListFragment: Fragment() {
             }
         )
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        Log.d(logTag, "onCreateOptionsMenu() called")
+        inflater.inflate(R.menu.fragment_crime_list, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.d(logTag, "onOptionsItemSelected() called")
+        return when(item.itemId) {
+            R.id.new_crime_menu_item -> {
+                val crime = Crime()
+                crimeListViewModel.addCrime(crime)
+                callbacks?.onCrimeSelected(crime.id)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onDestroyView(){
         Log.d(logTag, "onDestroyView() called")
         super.onDestroyView()
