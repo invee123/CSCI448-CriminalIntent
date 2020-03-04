@@ -72,16 +72,18 @@ class CrimeListFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         Log.d(logTag, "onCreateView() called")
-        val view = inflater.inflate(R.layout.fragment_detail, container, false)
+        val view = inflater.inflate(R.layout.fragment_list, container, false)
         crimeRecyclerView = view.findViewById(R.id.crime_list_recycler_view) as RecyclerView
         crimeRecyclerView.layoutManager = LinearLayoutManager(context)
         updateUI(emptyList())
         return view
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         Log.d(logTag, "onViewCreated() called")
         super.onViewCreated(view, savedInstanceState)
     }
+
     override fun onActivityCreated(savedInstanceState: Bundle?){
         Log.d(logTag, "onActivityCreated() called")
         super.onActivityCreated(savedInstanceState)
@@ -99,7 +101,7 @@ class CrimeListFragment: Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         Log.d(logTag, "onCreateOptionsMenu() called")
-        inflater.inflate(R.menu.fragment_crime_list, menu)
+        return inflater.inflate(R.menu.fragment_crime_list, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -119,6 +121,7 @@ class CrimeListFragment: Fragment() {
         Log.d(logTag, "onDestroyView() called")
         super.onDestroyView()
     }
+
     override fun onDetach() {
         Log.d(logTag, "onDetach() called")
         super.onDetach()

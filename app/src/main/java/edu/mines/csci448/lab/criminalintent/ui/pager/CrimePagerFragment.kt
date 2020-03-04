@@ -72,7 +72,7 @@ class CrimePagerFragment: Fragment() {
                               savedInstanceState: Bundle?): View? {
         Log.d(logTag, "onCreateView() called")
         val view = inflater.inflate(R.layout.fragment_pager, container, false)
-        crimeViewPager = view.findViewById(R.id.crime_view_pager)
+        crimeViewPager = view.findViewById(R.id.crime_view_pager) as ViewPager2
         updateUI(emptyList())
         return view
     }

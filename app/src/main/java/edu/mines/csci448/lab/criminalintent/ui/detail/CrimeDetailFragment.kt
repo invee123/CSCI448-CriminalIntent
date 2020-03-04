@@ -6,10 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.CheckBox
+import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import edu.mines.csci448.lab.criminalintent.R
 import edu.mines.csci448.lab.criminalintent.data.Crime
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.fragment_detail.*
 import kotlinx.android.synthetic.main.list_item_crime.*
 import java.util.*
@@ -20,6 +24,9 @@ class CrimeDetailFragment : Fragment() {
     private val logTag = "448.CrimeDetailFrag"
     private lateinit var crime: Crime
     private lateinit var crimeDetailViewModel: CrimeDetailViewModel
+    private lateinit var titleTextField: EditText
+    private lateinit var dateButton: Button
+    private lateinit var isSolved: CheckBox
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +42,7 @@ class CrimeDetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         Log.d(logTag, "onStart() called")
+
     }
 
     companion object {
@@ -77,7 +85,13 @@ class CrimeDetailFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                      savedInstanceState: Bundle?): View? {
         Log.d(logTag, "onCreateView() called")
+
         val view = inflater.inflate(R.layout.fragment_detail, container, false)
+
+        titleTextField = view.findViewById(R.id.crime_title_edit_text) as EditText
+        dateButton = view.findViewById(R.id.crime_date_button) as Button
+        isSolved = view.findViewById(R.id.crime_solved_checkbox) as CheckBox
+
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
@@ -106,9 +120,9 @@ class CrimeDetailFragment : Fragment() {
     }
 
     private fun updateUI() {
-        crime_title_edit_text.setText(crime.title)
-        crime_date_button.text = crime.date.toString()
-        crime_solved_checkbox.apply {
+        titleTextField.setText(crime.title)
+        dateButton.text = crime.date.toString()
+        isSolved.apply {
             isChecked = crime.isSolved
             jumpDrawablesToCurrentState()
         }

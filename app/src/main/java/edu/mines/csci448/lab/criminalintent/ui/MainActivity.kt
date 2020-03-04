@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity(), CrimeListFragment.Callbacks {
     }
 
     override fun onStart() {
+        //TODO this is wrong?
         super.onStart()
         Log.d(logTag, "onStart() called")
     }
