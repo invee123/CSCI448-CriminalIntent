@@ -2,6 +2,8 @@ package edu.mines.csci448.lab.criminalintent.ui.detail
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +30,8 @@ class CrimeDetailFragment : Fragment() {
     private lateinit var dateButton: Button
     private lateinit var isSolved: CheckBox
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(logTag, "onCreate() called")
@@ -43,6 +47,25 @@ class CrimeDetailFragment : Fragment() {
         super.onStart()
         Log.d(logTag, "onStart() called")
 
+        val titleWatcher: TextWatcher = object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                //does nothing
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                crime.title = s.toString()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                //does nothing
+            }
+        }
+
+        titleTextField.addTextChangedListener(titleWatcher)
+
+        isSolved.apply {
+            setOnCheckedChangeListener{_, isChecked -> crime.isSolved = isChecked}
+        }
     }
 
     companion object {
