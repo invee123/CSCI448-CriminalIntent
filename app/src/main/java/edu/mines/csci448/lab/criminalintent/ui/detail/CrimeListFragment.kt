@@ -26,7 +26,7 @@ class CrimeListFragment: Fragment() {
     private val logTag = "448.CrimeListFrag"
     private lateinit var crimeListViewModel: CrimeListViewModel
     private lateinit var crimeRecyclerView: RecyclerView
-    private lateinit var adapter: CrimeListAdapter
+    private var adapter: CrimeListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -16,6 +16,7 @@ class CrimeHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
     fun bind(crime: Crime, clickListener: (Crime) -> Unit) {
         this.crime = crime
+
         itemView.setOnClickListener{(clickListener(this.crime))}
         titleTextView.text = this.crime.title
         dateTextView.text = this.crime.date.toString()
