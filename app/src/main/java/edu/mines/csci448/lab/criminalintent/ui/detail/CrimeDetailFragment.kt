@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
@@ -42,6 +43,7 @@ class CrimeDetailFragment : Fragment() {
     private lateinit var isSolved: CheckBox
     private lateinit var crimeReportButton: Button
     private lateinit var crimeSuspectButton: Button
+    private lateinit var crimeCallButton: Button
     private val pickContactIntent = Intent(Intent.ACTION_PICK,
         ContactsContract.Contacts.CONTENT_URI)
 
@@ -108,6 +110,13 @@ class CrimeDetailFragment : Fragment() {
                 startActivityForResult(pickContactIntent, REQUEST_CODE_CONTACT)
             }
         }
+
+        crimeCallButton.setOnClickListener {
+            val callIntent = Intent(Intent.ACTION_DIAL)
+            val phoneNumberUri = Uri.parse( "tel:${crime.suspectNumber}" )
+            callIntent.data = phoneNumberUri
+            startActivity( callIntent )
+        }
     }
 
     companion object {
@@ -158,6 +167,7 @@ class CrimeDetailFragment : Fragment() {
         isSolved = view.findViewById(R.id.crime_solved_checkbox) as CheckBox
         crimeReportButton = view.findViewById(R.id.crime_report_button)
         crimeSuspectButton = view.findViewById(R.id.crime_suspect_button)
+        crimeCallButton = view.findViewById(R.id.crime_call_button)
 
         crimeSuspectButton.isEnabled = requireActivity().packageManager
             .resolveActivity(pickContactIntent, PackageManager.MATCH_DEFAULT_ONLY) != null
@@ -199,7 +209,7 @@ class CrimeDetailFragment : Fragment() {
                 }
                 val contactUri = data.data ?: return
                 // specify which fields you want your query to return values for
-                val queryFields = listOf(ContactsContract.Contacts.DISPLAY_NAME)
+                val queryFields = listOf(ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID)
                 // perform your query, the contactUri is like a "where" clause
                 val cursor = requireActivity().contentResolver.query(contactUri,
                     queryFields.toTypedArray(),
@@ -214,6 +224,28 @@ class CrimeDetailFragment : Fragment() {
                     contactIter.moveToFirst()
                     val suspect = contactIter.getString(0)
                     crime.suspect = suspect // set the crime's suspect field
+                    // pull out the second column – that is the contact's ID
+                    val contactID = contactIter.getString(1)
+                    val phoneURI = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+                    val phoneNumberQueryFields = listOf(
+                        ContactsContract.CommonDataKinds.Phone.NUMBER )
+                    val whereClause = "${ContactsContract.CommonDataKinds.Phone.CONTACT_ID} = ?"
+                    val phoneQueryParameters = listOf( contactID.toString() )
+                    val phoneCursor = requireActivity().contentResolver
+                        .query(phoneURI, phoneNumberQueryFields.toTypedArray(),
+                            whereClause, phoneQueryParameters.toTypedArray(),
+                            null)
+                    phoneCursor?.use { phoneIter ->
+                        if( phoneIter.count > 0 ) {
+                            phoneIter.moveToFirst()
+                            crime.suspectNumber = phoneIter.getString(0)
+                            crimeCallButton.isEnabled = true
+                        } else {
+                            // no phone number found
+                            crime.suspectNumber = null
+                            crimeCallButton.isEnabled = false
+                        }
+                    }
                     crimeDetailViewModel.saveCrime(crime)// save the crime
                     crimeSuspectButton.text = suspect // change the button text
                 }
@@ -231,6 +263,7 @@ class CrimeDetailFragment : Fragment() {
         if(crime.suspect != null ) {
             crimeSuspectButton.text = crime.suspect
         }
+        crimeCallButton.isEnabled = crime.suspectNumber != null
     }
 
     private fun generateCrimeReport(): String {
